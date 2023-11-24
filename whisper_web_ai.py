@@ -1,13 +1,8 @@
 import streamlit as st
 import whisper
-import os
-
-
 from languages import supported_languages
 from abc import ABC, abstractmethod
 from deep_translator import GoogleTranslator
-import speech_recognition as sr
-import cython
 
 class ITranslateWords(ABC):
     def __init__(self):
