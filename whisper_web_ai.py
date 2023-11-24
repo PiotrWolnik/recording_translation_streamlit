@@ -3,6 +3,8 @@ import whisper
 from languages import supported_languages
 from abc import ABC, abstractmethod
 from deep_translator import GoogleTranslator
+import subprocess
+import shlex
 
 class ITranslateWords(ABC):
     def __init__(self):
@@ -22,6 +24,9 @@ class TranslateWords(ITranslateWords):
     def getResult(self) -> str:
         return self.result
 
+import subprocess
+import shlex
+
 main_container = st.container()
 _, center_column, _ = main_container.columns([1, 5, 1])
 
@@ -32,9 +37,16 @@ destination_language = center_column.selectbox(
         key="target_lang",
         label_visibility="hidden",
 )
+
+# amount_to_transcribe = center_column.select_box(
+#     "Choose amount of data to transfer"
+# )
+
 audio_file = st.file_uploader("Upload Audio", type=["wav", "mp3", "m4a"])
 model = whisper.load_model("base")
 st.text("Whisper Model Loaded")
+
+choice = st.number_input("Pick a number")
 
 if st.sidebar.button("Transcribe Speech"):
     if audio_file is not None:
