@@ -55,7 +55,7 @@ if audio_file is not None:
 
 if st.sidebar.button("Transcribe Speech"):
     if audio_file is not None:
-        if choice == time_of_whole_vid:
+        if choice >= time_of_whole_vid:
             model = whisper.load_model("base")
             st.text("Whisper Model Loaded")
             transcription = model.transcribe(audio_file.name)
