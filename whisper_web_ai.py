@@ -5,6 +5,7 @@ from abc import ABC, abstractmethod
 from deep_translator import GoogleTranslator
 import subprocess
 import shlex
+import speech_recognition as sr
 
 class ITranslateWords(ABC):
     def __init__(self):
@@ -38,22 +39,37 @@ destination_language = center_column.selectbox(
         label_visibility="hidden",
 )
 
-# amount_to_transcribe = center_column.select_box(
-#     "Choose amount of data to transfer"
-# )
-
+import wave
 audio_file = st.file_uploader("Upload Audio", type=["wav", "mp3", "m4a"])
-model = whisper.load_model("base")
-st.text("Whisper Model Loaded")
 
-choice = st.number_input("Pick a number")
+def get_duration_wave(file_path):
+   with wave.open(file_path, 'r') as audio_file:
+      frame_rate = audio_file.getframerate()
+      n_frames = audio_file.getnframes()
+      duration = n_frames / float(frame_rate)
+      return duration
+
+if audio_file is not None:
+    time_of_whole_vid = get_duration_wave(audio_file.name)
+    choice = st.number_input(f"Pick a duration of video you want to translate (in seconds) [0-{time_of_whole_vid}]")
 
 if st.sidebar.button("Transcribe Speech"):
     if audio_file is not None:
-        st.sidebar.success("Transcribing Audio")
-        transcription = model.transcribe(audio_file.name)
-        st.sidebar.success("Transcribing Audio")
-        st.markdown(TranslateWords(transcription["text"], supported_languages[destination_language]).getResult())
+        if choice == time_of_whole_vid:
+            model = whisper.load_model("base")
+            st.text("Whisper Model Loaded")
+            transcription = model.transcribe(audio_file.name)
+            st.sidebar.success("Transcribing Audio")
+            st.markdown(TranslateWords(transcription["text"], supported_languages[destination_language]).getResult())
+        else:
+            recognizer = sr.Recognizer()
+            st.sidebar.success("Transcribing Audio")
+            print(audio_file.name)
+            with sr.AudioFile(audio_file.name) as source:
+                audio_data = recognizer.record(source, offset=0,duration=choice)
+                transcription = recognizer.recognize_google(audio_data)
+            st.sidebar.success("Transcribing Audio")
+            st.markdown(TranslateWords(transcription, supported_languages[destination_language]).getResult())
     else:
         st.sidebar.error("Please upload an audio file")
 
