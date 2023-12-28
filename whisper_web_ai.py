@@ -73,7 +73,7 @@ if st.sidebar.button("Transcribe Audio"):
         starting_point, ending_point = [float(elem) for elem in choice.split("-")]
         st.sidebar.success("Transcribing Audio")
         if starting_point == 0.0 and ending_point >= time_of_whole_vid:
-            st.markdown(recording_translator.translate_audio())
+            st.markdown(recording_translator.translate_full_audio())
         else:
             st.markdown(recording_translator.translate_part_of_the_audio(starting_point, ending_point))
     else:
