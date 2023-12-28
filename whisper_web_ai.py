@@ -3,8 +3,7 @@ import whisper
 from languages import supported_languages
 from abc import ABC, abstractmethod
 from deep_translator import GoogleTranslator
-import subprocess
-import shlex
+import wave
 import speech_recognition as sr
 
 class ITranslateWords(ABC):
@@ -25,8 +24,24 @@ class TranslateWords(ITranslateWords):
     def getResult(self) -> str:
         return self.result
 
-import subprocess
-import shlex
+
+class TranslateRecording:
+    def __init__(self, language_to_translate_to: str, audio: str) -> None:
+        self.language_to_translate_to = language_to_translate_to
+        self.audio = audio
+    
+    def translate_audio(self) -> str:
+        model = whisper.load_model("base")
+        transcription = model.transcribe(self.audio)
+        return TranslateWords(transcription["text"], self.language_to_translate_to).getResult()
+
+
+def get_duration_wave(file_path):
+   with wave.open(file_path, 'r') as audio_file:
+      frame_rate = audio_file.getframerate()
+      n_frames = audio_file.getnframes()
+      duration = n_frames / float(frame_rate)
+      return duration
 
 main_container = st.container()
 _, center_column, _ = main_container.columns([1, 5, 1])
@@ -39,15 +54,8 @@ destination_language = center_column.selectbox(
         label_visibility="hidden",
 )
 
-import wave
 audio_file = st.file_uploader("Upload Audio", type=["wav", "mp3", "m4a"])
 
-def get_duration_wave(file_path):
-   with wave.open(file_path, 'r') as audio_file:
-      frame_rate = audio_file.getframerate()
-      n_frames = audio_file.getnframes()
-      duration = n_frames / float(frame_rate)
-      return duration
 
 if audio_file is not None:
     time_of_whole_vid = get_duration_wave(audio_file.name)
@@ -56,11 +64,9 @@ if audio_file is not None:
 if st.sidebar.button("Transcribe Speech"):
     if audio_file is not None:
         if choice >= time_of_whole_vid:
-            model = whisper.load_model("base")
-            st.text("Whisper Model Loaded")
-            transcription = model.transcribe(audio_file.name)
+            recording_translator = TranslateRecording(supported_languages[destination_language], audio_file.name)
             st.sidebar.success("Transcribing Audio")
-            st.markdown(TranslateWords(transcription["text"], supported_languages[destination_language]).getResult())
+            st.markdown(recording_translator.translate_audio())
         else:
             recognizer = sr.Recognizer()
             st.sidebar.success("Transcribing Audio")
