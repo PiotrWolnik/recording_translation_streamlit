@@ -6,15 +6,7 @@ from deep_translator import GoogleTranslator
 import wave
 import speech_recognition as sr
 
-class ITranslateWords(ABC):
-    def __init__(self):
-        super().__init__()
-
-    @abstractmethod
-    def getResult(self) -> str:
-        pass
-
-class TranslateWords(ITranslateWords):
+class TranslateWords:
     def __init__(self, text_to_translate: str, language_to_translate_to: str):
         super().__init__()
         self.text_to_translate = text_to_translate
