@@ -71,12 +71,12 @@ if st.sidebar.button("Transcribe Audio"):
     if audio_file is not None:
         recording_translator = TranslateRecording(supported_languages[destination_language], audio_file.name)
         starting_point, ending_point = [float(elem) for elem in choice.split("-")]
-        st.sidebar.success("Transcribing audio")
+        sidebar = st.sidebar.success("Transcribing audio")
         if starting_point == 0.0 and ending_point >= time_of_whole_vid:
             st.markdown(recording_translator.translate_full_audio())
         else:
             st.markdown(recording_translator.translate_part_of_the_audio(starting_point, ending_point-starting_point))
-        st.sidebar.success("Audio transcribed!")
+        sidebar.success("Audio transcribed!")
     else:
         st.sidebar.error("Please upload an audio file")
 
