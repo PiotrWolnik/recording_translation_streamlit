@@ -30,11 +30,17 @@ class TranslateRecording:
         self.language_to_translate_to = language_to_translate_to
         self.audio = audio
     
-    def translate_audio(self) -> str:
+    def translate_full_audio(self) -> str:
         model = whisper.load_model("base")
         transcription = model.transcribe(self.audio)
         return TranslateWords(transcription["text"], self.language_to_translate_to).getResult()
 
+    def translate_part_of_the_audio(self, starting_point: float, ending_point: float) -> str:
+        recognizer = sr.Recognizer()
+        with sr.AudioFile(self.audio) as source:
+            audio_data = recognizer.record(source, offset=starting_point,duration=ending_point)
+            transcription = recognizer.recognize_google(audio_data)
+        return TranslateWords(transcription, self.language_to_translate_to).getResult()
 
 def get_duration_wave(file_path):
    with wave.open(file_path, 'r') as audio_file:
@@ -59,23 +65,17 @@ audio_file = st.file_uploader("Upload Audio", type=["wav", "mp3", "m4a"])
 
 if audio_file is not None:
     time_of_whole_vid = get_duration_wave(audio_file.name)
-    choice = st.number_input(f"Pick a duration of video you want to translate (in seconds) [0-{time_of_whole_vid}]")
+    choice = st.text_input('Choose duration of video [beginning-end] (in seconds) or leave it as it is.', f'0-{time_of_whole_vid}')
 
-if st.sidebar.button("Transcribe Speech"):
+if st.sidebar.button("Transcribe Audio"):
     if audio_file is not None:
-        if choice >= time_of_whole_vid:
-            recording_translator = TranslateRecording(supported_languages[destination_language], audio_file.name)
-            st.sidebar.success("Transcribing Audio")
+        recording_translator = TranslateRecording(supported_languages[destination_language], audio_file.name)
+        starting_point, ending_point = float(choice.split("-"))
+        st.sidebar.success("Transcribing Audio")
+        if starting_point == 0.0 and ending_point >= time_of_whole_vid:
             st.markdown(recording_translator.translate_audio())
         else:
-            recognizer = sr.Recognizer()
-            st.sidebar.success("Transcribing Audio")
-            print(audio_file.name)
-            with sr.AudioFile(audio_file.name) as source:
-                audio_data = recognizer.record(source, offset=0,duration=choice)
-                transcription = recognizer.recognize_google(audio_data)
-            st.sidebar.success("Transcribing Audio")
-            st.markdown(TranslateWords(transcription, supported_languages[destination_language]).getResult())
+            st.markdown(recording_translator.translate_part_of_the_audio(starting_point, ending_point))
     else:
         st.sidebar.error("Please upload an audio file")
 
