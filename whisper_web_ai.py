@@ -75,7 +75,7 @@ if st.sidebar.button("Transcribe Audio"):
         if starting_point == 0.0 and ending_point >= time_of_whole_vid:
             st.markdown(recording_translator.translate_full_audio())
         else:
-            st.markdown(recording_translator.translate_part_of_the_audio(starting_point, ending_point))
+            st.markdown(recording_translator.translate_part_of_the_audio(starting_point, ending_point-starting_point))
     else:
         st.sidebar.error("Please upload an audio file")
 
