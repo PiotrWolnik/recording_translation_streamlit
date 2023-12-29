@@ -37,10 +37,7 @@ class TranslateRecording:
         return TranslateWords(transcription, self.language_to_translate_to).getResult()
 
 def get_duration_wave(file_path):
-    x,_ = librosa.load(file_path, sr=16000)
-    sf.write('tmp.wav', x, 16000)
-    wave.open('tmp.wav','r')
-    with wave.open('tmp.wav', 'r') as audio_file:
+    with wave.open(file_path, 'r') as audio_file:
         frame_rate = audio_file.getframerate()
         n_frames = audio_file.getnframes()
         duration = n_frames / float(frame_rate)
@@ -66,7 +63,7 @@ if audio_file is not None:
 
 if st.sidebar.button("Transcribe Audio"):
     if audio_file is not None:
-        recording_translator = TranslateRecording(supported_languages[destination_language], "tmp.wav")
+        recording_translator = TranslateRecording(supported_languages[destination_language], audio_file.name)
         starting_point, ending_point = [float(elem) for elem in choice.split("-")]
         sidebar = st.sidebar.success("Transcribing audio")
         if starting_point == 0.0 and ending_point >= time_of_whole_vid:
