@@ -4,9 +4,6 @@ from languages import supported_languages
 from deep_translator import GoogleTranslator
 import wave
 import speech_recognition as sr
-import numpy as np
-import librosa
-import soundfile as sf
 
 class TranslateWords:
     def __init__(self, text_to_translate: str, language_to_translate_to: str):
