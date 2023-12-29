@@ -30,7 +30,7 @@ class TranslateRecording:
         recognizer = sr.Recognizer()
         with sr.AudioFile(self.audio) as source:
             audio_data = recognizer.record(source, offset=starting_point,duration=ending_point)
-            transcription = recognizer.recognize_google(audio_data)
+            transcription = recognizer.recognize_whisper(audio_data)
         return TranslateWords(transcription, self.language_to_translate_to).getResult()
 
 def get_duration_wave(file_path):
