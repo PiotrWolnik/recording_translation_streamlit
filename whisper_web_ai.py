@@ -44,7 +44,7 @@ def get_duration_wave(file_path):
         frame_rate = audio_file.getframerate()
         n_frames = audio_file.getnframes()
         duration = n_frames / float(frame_rate)
-        return duration
+    return duration
 
 main_container = st.container()
 _, center_column, _ = main_container.columns([1, 5, 1])
