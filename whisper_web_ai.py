@@ -4,7 +4,7 @@ from languages import supported_languages
 from deep_translator import GoogleTranslator
 import wave
 import speech_recognition as sr
-
+import numpy as np
 import librosa
 import soundfile as sf
 
@@ -20,7 +20,7 @@ class TranslateWords:
 
 
 class TranslateRecording:
-    def __init__(self, language_to_translate_to: str, audio: str) -> None:
+    def __init__(self, language_to_translate_to: str, audio: np.ndarray) -> None:
         self.language_to_translate_to = language_to_translate_to
         self.audio = audio
     
