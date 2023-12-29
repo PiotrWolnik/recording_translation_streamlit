@@ -2,8 +2,11 @@ import streamlit as st
 import whisper
 from languages import supported_languages
 from deep_translator import GoogleTranslator
-import wave
 import speech_recognition as sr
+import audioread
+from pydub import AudioSegment
+import librosa
+
 
 class TranslateWords:
     def __init__(self, text_to_translate: str, language_to_translate_to: str):
@@ -34,11 +37,9 @@ class TranslateRecording:
         return TranslateWords(transcription, self.language_to_translate_to).getResult()
 
 def get_duration_wave(file_path):
-    with wave.open(file_path, 'r') as audio_file:
-        frame_rate = audio_file.getframerate()
-        n_frames = audio_file.getnframes()
-        duration = n_frames / float(frame_rate)
-    return duration
+    with audioread.audio_open(file_path) as f:
+        totalsec = f.duration 
+    return totalsec
 
 main_container = st.container()
 _, center_column, _ = main_container.columns([1, 5, 1])
@@ -51,7 +52,7 @@ destination_language = center_column.selectbox(
         label_visibility="hidden",
 )
 
-audio_file = st.file_uploader("Upload Audio", type=["wav", "mp3", "m4a"])
+audio_file = st.file_uploader("Upload Audio", type=["wav", "mp3"])
 
 
 if audio_file is not None:
@@ -60,6 +61,11 @@ if audio_file is not None:
 
 if st.sidebar.button("Transcribe Audio"):
     if audio_file is not None:
+        if librosa.core.audio.get_samplerate(audio_file.name) == 44100:
+            sound = AudioSegment.from_mp3(audio_file.name)
+            sound.export("test.wav", format="wav")
+            audio_file.name = "test.wav"
+
         recording_translator = TranslateRecording(supported_languages[destination_language], audio_file.name)
         starting_point, ending_point = [float(elem) for elem in choice.split("-")]
         sidebar = st.sidebar.success("Transcribing audio")
