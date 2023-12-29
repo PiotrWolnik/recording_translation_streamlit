@@ -1,10 +1,12 @@
 import streamlit as st
 import whisper
 from languages import supported_languages
-from abc import ABC, abstractmethod
 from deep_translator import GoogleTranslator
 import wave
 import speech_recognition as sr
+
+import librosa
+import soundfile as sf
 
 class TranslateWords:
     def __init__(self, text_to_translate: str, language_to_translate_to: str):
@@ -35,11 +37,14 @@ class TranslateRecording:
         return TranslateWords(transcription, self.language_to_translate_to).getResult()
 
 def get_duration_wave(file_path):
-   with wave.open(file_path, 'r') as audio_file:
-      frame_rate = audio_file.getframerate()
-      n_frames = audio_file.getnframes()
-      duration = n_frames / float(frame_rate)
-      return duration
+    x,_ = librosa.load(file_path, sr=16000)
+    sf.write('tmp.wav', x, 16000)
+    wave.open('tmp.wav','r')
+    with wave.open('tmp.wav', 'r') as audio_file:
+        frame_rate = audio_file.getframerate()
+        n_frames = audio_file.getnframes()
+        duration = n_frames / float(frame_rate)
+        return duration
 
 main_container = st.container()
 _, center_column, _ = main_container.columns([1, 5, 1])

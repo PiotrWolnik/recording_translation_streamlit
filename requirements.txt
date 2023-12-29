@@ -4,3 +4,5 @@ ffmpeg-python
 SpeechRecognition
 wave
 git+https://github.com/openai/whisper.git
+librosa
+soundfile
