@@ -66,7 +66,7 @@ if audio_file is not None:
 
 if st.sidebar.button("Transcribe Audio"):
     if audio_file is not None:
-        recording_translator = TranslateRecording(supported_languages[destination_language], audio_file.name)
+        recording_translator = TranslateRecording(supported_languages[destination_language], 'tmp.wav')
         starting_point, ending_point = [float(elem) for elem in choice.split("-")]
         sidebar = st.sidebar.success("Transcribing audio")
         if starting_point == 0.0 and ending_point >= time_of_whole_vid:
