@@ -20,7 +20,7 @@ class TranslateWords:
 
 
 class TranslateRecording:
-    def __init__(self, language_to_translate_to: str, audio: np.ndarray) -> None:
+    def __init__(self, language_to_translate_to: str, audio: str) -> None:
         self.language_to_translate_to = language_to_translate_to
         self.audio = audio
     
@@ -66,7 +66,7 @@ if audio_file is not None:
 
 if st.sidebar.button("Transcribe Audio"):
     if audio_file is not None:
-        recording_translator = TranslateRecording(supported_languages[destination_language], 'tmp.wav')
+        recording_translator = TranslateRecording(supported_languages[destination_language], audio_file.name)
         starting_point, ending_point = [float(elem) for elem in choice.split("-")]
         sidebar = st.sidebar.success("Transcribing audio")
         if starting_point == 0.0 and ending_point >= time_of_whole_vid:
