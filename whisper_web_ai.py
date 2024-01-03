@@ -20,21 +20,22 @@ class TranslateWords:
 
 
 class TranslateRecording:
-    def __init__(self, language_to_translate_to: str, audio: str) -> None:
+    def __init__(self, language_to_translate_to: str, audio: str, source_language: str = 'auto') -> None:
         self.language_to_translate_to = language_to_translate_to
+        self.source_language = source_language
         self.audio = audio
     
     def translate_full_audio(self) -> str:
         model = whisper.load_model("base")
         transcription = model.transcribe(self.audio)
-        return TranslateWords(transcription["text"], self.language_to_translate_to).getResult()
+        return TranslateWords(transcription["text"], self.language_to_translate_to, self.source_language).getResult()
 
     def translate_part_of_the_audio(self, starting_point: float, ending_point: float) -> str:
         recognizer = sr.Recognizer()
         with sr.AudioFile(self.audio) as source:
             audio_data = recognizer.record(source, offset=starting_point,duration=ending_point)
-            transcription = recognizer.recognize_whisper(audio_data)
-        return TranslateWords(transcription, self.language_to_translate_to).getResult()
+            transcription = recognizer.recognize_google(audio_data)
+        return TranslateWords(transcription, self.language_to_translate_to, self.source_language).getResult()
 
 def get_duration_wave(file_path):
     with audioread.audio_open(file_path) as f:
