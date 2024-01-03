@@ -13,7 +13,6 @@ class TranslateWords:
         super().__init__()
         self.text_to_translate = text_to_translate
         self.language_to_translate_to = language_to_translate_to
-        print(f"Inside translate words: {language_to_translate_to}")
         self.result = GoogleTranslator(source=source_language, 
                                 target=self.language_to_translate_to).translate(self.text_to_translate)
     def getResult(self) -> str:
