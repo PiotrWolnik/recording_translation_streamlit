@@ -6,7 +6,7 @@ import speech_recognition as sr
 import audioread
 from pydub import AudioSegment
 import librosa
-from streamlit import AudioWidget
+from soundlit import AudioWidget
 import soundfile as sf
 
 class TranslateWords:
