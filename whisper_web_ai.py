@@ -9,7 +9,7 @@ import librosa
 import soundfile as sf
 from io import BytesIO
 import io
-from typing import Union, AnyStr, Optional
+from typing import Union, Optional
 import numpy as np
 from streamlit.runtime.uploaded_file_manager import UploadedFile
 import os
@@ -113,7 +113,7 @@ class AudioWidget:
                 f"Please try again.",
                 icon="😮"
             )
-    def convert(self, path: str | Path) -> AnyStr:
+    def convert(self, path: str | Path):
         return Popen(
             ["ffmpeg", "-hide_banner", "-i", f"{path}", "-f", f"{self.convert_to}", "-"],
             stdout=PIPE
@@ -126,7 +126,7 @@ class AudioWidget:
     def define_location(self, file_id: str, extension: str) -> str:
         return os.path.join(self.root_dir, f"{file_id}.{extension}")
     
-    def __call__(self, source: UploadedFile) -> bytes | AnyStr:
+    def __call__(self, source: UploadedFile) -> bytes:
         data = source.getvalue()
         if not self.check_extension(source.name):
             return data
