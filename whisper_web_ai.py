@@ -6,10 +6,8 @@ import speech_recognition as sr
 import audioread
 from pydub import AudioSegment
 import librosa
-from soundlit import AudioWidget
+import AudioWidget
 import soundfile as sf
-
-
 
 class TranslateWords:
     def __init__(self, text_to_translate: str, language_to_translate_to: str, source_language: str = 'auto'):
