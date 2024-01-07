@@ -92,7 +92,7 @@ class AudioWidget:
     def _safe_load(self, data: io.BytesIO) -> tuple[np.ndarray, int]:
         return librosa.load(data, sr=self.sample_rate, mono=self.mono)
 
-    def __check_duration(self, data: AnyStr | bytes) -> tuple[np.ndarray, int]:
+    def __check_duration(self, data: bytes) -> tuple[np.ndarray, int]:
         audio, sr = librosa.load(io.BytesIO(data), sr=None)
         duration = librosa.get_duration(y=audio, sr=sr)
         if (duration >= self.min_duration) and (duration <= self.max_duration):
