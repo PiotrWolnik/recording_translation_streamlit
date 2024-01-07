@@ -6,6 +6,9 @@ import speech_recognition as sr
 import audioread
 from pydub import AudioSegment
 import librosa
+from soundlit import AudioWidget
+import soundfile as sf
+
 
 
 class TranslateWords:
@@ -34,7 +37,7 @@ class TranslateRecording:
         recognizer = sr.Recognizer()
         with sr.AudioFile(self.audio) as source:
             audio_data = recognizer.record(source, offset=starting_point,duration=ending_point)
-            transcription = recognizer.recognize_google(audio_data)
+            transcription = recognizer.recognize_whisper(audio_data)
         return TranslateWords(transcription, self.language_to_translate_to, self.source_language).getResult()
 
 def get_duration_wave(file_path):
@@ -53,21 +56,17 @@ destination_language = center_column.selectbox(
         label_visibility="hidden",
 )
 
-audio_file = st.file_uploader("Upload Audio", type=["wav", "mp3"])
+widget = AudioWidget()
+audio = widget.load_audio()
+if audio:
+    sf.write('audio.wav', audio[0], audio[1])
 
-
-if audio_file is not None:
-    time_of_whole_vid = get_duration_wave(audio_file.name)
-    choice = st.text_input('Choose duration of video [beginning-end] (in seconds) or leave it as it is.', f'0-{time_of_whole_vid}')
+time_of_whole_vid = get_duration_wave('audio.wav')
+choice = st.text_input('Choose duration of video [beginning-end] (in seconds) or leave it as it is.', f'0-{time_of_whole_vid}')
 
 if st.sidebar.button("Transcribe Audio"):
-    if audio_file is not None:
-        if librosa.core.audio.get_samplerate(audio_file.name) == 44100:
-            sound = AudioSegment.from_mp3(audio_file.name)
-            sound.export("test.wav", format="wav")
-            audio_file.name = "test.wav"
-
-        recording_translator = TranslateRecording(supported_languages[destination_language], audio_file.name)
+    if audio is not None:
+        recording_translator = TranslateRecording(supported_languages[destination_language], 'audio.wav')
         starting_point, ending_point = [float(elem) for elem in choice.split("-")]
         sidebar = st.sidebar.success("Transcribing audio")
         if starting_point == 0.0 and ending_point >= time_of_whole_vid:
@@ -79,4 +78,4 @@ if st.sidebar.button("Transcribe Audio"):
         st.sidebar.error("Please upload an audio file")
 
 st.sidebar.header("Play Original Audio File")
-st.sidebar.audio(audio_file)
+st.sidebar.audio('audio.wav')
