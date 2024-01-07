@@ -113,13 +113,13 @@ class AudioWidget:
                 f"Please try again.",
                 icon="😮"
             )
-    def convert(self, path: str | Path):
+    def convert(self, path: str):
         return Popen(
             ["ffmpeg", "-hide_banner", "-i", f"{path}", "-f", f"{self.convert_to}", "-"],
             stdout=PIPE
         ).stdout.read()
 
-    def check_extension(self, filename: str | Path) -> Union[None, str]:
+    def check_extension(self, filename: str) -> Union[None, str]:
         if filename.split(".")[-1] not in self.common_extensions:
             return filename
 
